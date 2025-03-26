@@ -1,12 +1,8 @@
 # 🔐 NostRinger
 
-![NostRinger](./public/nostringer-preview.png)
-
 ## Anonymous Ring Signatures with Nostr Keys
 
 NostRinger is a sleek, terminal-themed web application that demonstrates the power of ring signatures using Nostr cryptographic keys. Ring signatures allow a user to sign a message on behalf of a group without revealing exactly which member signed it—providing cryptographic anonymity while ensuring verifiable authenticity.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyour-username%2Fnostringer-app)
 
 ## 🌟 Features
 
@@ -24,7 +20,7 @@ NostRinger is a sleek, terminal-themed web application that demonstrates the pow
 3. **Ring Signature**: When a ring member signs, the signature verifies against the ring without revealing which member signed it
 4. **Verification**: Confirm that the message was signed by *someone* in the ring, but not *who specifically*
 
-## 🚀 Try It Yourself
+## 🎮 Try It Yourself
 
 ### Ring Signature Demonstration
 
@@ -47,7 +43,7 @@ This proves that verification only confirms group membership, not individual ide
 - **Next.js** - React framework with TypeScript
 - **TailwindCSS** - Utility-first CSS framework
 - **nostr-tools** - Nostr key generation and management
-- **nostringer** - Ring signature cryptography library
+- **nostringer** - Ring signature cryptography library - [Github](https://github.com/AbdelStark/nostringer)
 
 ## 💻 Development
 
@@ -60,7 +56,7 @@ This proves that verification only confirms group membership, not individual ide
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/nostringer-app.git
+git clone https://github.com/AbdelStark/nostringer-app.git
 cd nostringer-app
 
 # Install dependencies
@@ -80,18 +76,28 @@ npm run build
 npm start
 ```
 
-## 📚 Learn More
+## License
 
-- [What are Ring Signatures?](https://en.wikipedia.org/wiki/Ring_signature)
-- [Nostr Protocol](https://github.com/nostr-protocol/nostr)
-- [Next.js Documentation](https://nextjs.org/docs)
+This project is licensed under the [MIT License](License).
 
-## 📜 License
+## References
 
-Released under the MIT License. See `LICENSE` for more information.
+- [Linkable Spontaneous Anonymous Group Signature for Ad Hoc Groups](https://eprint.iacr.org/2004/027.pdf) - (Joseph Liu et al., 2004) – basis of LSAG.
+- [Beritani, ring-signatures JS library](https://github.com/beritani/ring-signatures) – Ed25519 ring signature implementation (SAG, bLSAG, MLSAG, CLSAG)​.
+- [Blockstream Elements rust-secp256k1-zkp library](https://github.com/BlockstreamResearch/rust-secp256k1-zkp) – Whitelist Ring Signature in libsecp256k1-zkp (C code exposed via Rust)​.
+- [Zero to Monero 2.0 – Chapter 3, ring signature algorithms](https://www.getmonero.org/library/Zero-to-Monero-2-0-0.pdf).
+- [Cronokirby Blog – On Monero’s Ring Signatures](https://cronokirby.com/posts/2022/03/on-moneros-ring-signatures), explains Schnorr ring signatures in detail​.
 
 ---
 
-<p align="center">
-  Built with ❤️ for the privacy-conscious web
-</p>
+Started with love by [AbdelStark](https://github.com/AbdelStark) 🧡
+
+Feel free to follow me on Nostr if you’d like, using my public key:
+
+```text
+npub1hr6v96g0phtxwys4x0tm3khawuuykz6s28uzwtj5j0zc7lunu99snw2e29
+```
+
+Or just **scan this QR code** to find me:
+
+![Nostr Public Key QR Code](https://hackmd.io/_uploads/SkAvwlYYC.png)
