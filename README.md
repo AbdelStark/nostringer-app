@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🔐 NostRinger
 
-## Getting Started
+![NostRinger](./public/nostringer-preview.png)
 
-First, run the development server:
+## Anonymous Ring Signatures with Nostr Keys
+
+NostRinger is a sleek, terminal-themed web application that demonstrates the power of ring signatures using Nostr cryptographic keys. Ring signatures allow a user to sign a message on behalf of a group without revealing exactly which member signed it—providing cryptographic anonymity while ensuring verifiable authenticity.
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyour-username%2Fnostringer-app)
+
+## 🌟 Features
+
+- **Generate Cryptographic Key Pairs** - Create 5 ring member keys and 2 normal user keys automatically
+- **Persistent Storage** - Keys are saved in localStorage for session persistence
+- **Edit Keys Manually** - Modify secret keys with public key auto-derivation
+- **Sign Messages** - Produce ring signatures with any selected user's key
+- **Verify Signatures** - Validate signatures against the ring of public keys
+- **Terminal UI** - Enjoy a sleek, cyberpunk-inspired terminal interface
+
+## 🧪 How It Works
+
+1. **Key Generation**: The app generates 7 Nostr key pairs—5 "ring members" and 2 "normal users"
+2. **Message Signing**: Select any user and sign a custom message
+3. **Ring Signature**: When a ring member signs, the signature verifies against the ring without revealing which member signed it
+4. **Verification**: Confirm that the message was signed by *someone* in the ring, but not *who specifically*
+
+## 🚀 Try It Yourself
+
+### Ring Signature Demonstration
+
+1. Enter a message in the input field
+2. Select a ring member (Ring User 1-5) as the signer
+3. Click "Sign" to generate a ring signature
+4. Click "Verify" to confirm the signature is valid for the ring
+
+### Privacy Test
+
+1. Sign a message with a ring member
+2. Verify it (should PASS)
+3. Now sign with a non-ring user
+4. Verify again (should FAIL - the signature is not from a ring member)
+
+This proves that verification only confirms group membership, not individual identity.
+
+## 🛠️ Technology Stack
+
+- **Next.js** - React framework with TypeScript
+- **TailwindCSS** - Utility-first CSS framework
+- **nostr-tools** - Nostr key generation and management
+- **nostringer** - Ring signature cryptography library
+
+## 💻 Development
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/your-username/nostringer-app.git
+cd nostringer-app
+
+# Install dependencies
+npm install
+
+# Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Build for Production
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Create optimized production build
+npm run build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Start the production server
+npm start
+```
 
-## Learn More
+## 📚 Learn More
 
-To learn more about Next.js, take a look at the following resources:
+- [What are Ring Signatures?](https://en.wikipedia.org/wiki/Ring_signature)
+- [Nostr Protocol](https://github.com/nostr-protocol/nostr)
+- [Next.js Documentation](https://nextjs.org/docs)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📜 License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Released under the MIT License. See `LICENSE` for more information.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<p align="center">
+  Built with ❤️ for the privacy-conscious web
+</p>

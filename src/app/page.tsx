@@ -1,103 +1,209 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from 'react';
+import { generateSecretKey, getPublicKey } from 'nostr-tools/pure';
+import { bytesToHex, hexToBytes } from '@noble/hashes/utils';
+import * as nostringer from 'nostringer';
+import UserList, { UserKey } from '../components/UserList';
+import SignVerifyPanel from '../components/SignVerifyPanel';
+import Script from 'next/script';
+
+const NUM_RING = 5;
+const NUM_NORMAL = 2;
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [userKeys, setUserKeys] = useState<UserKey[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [message, setMessage] = useState<string>("");
+  const [signature, setSignature] = useState<string | null>(null);
+  const [verifyResult, setVerifyResult] = useState<boolean|null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // JSON-LD structured data for SEO
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "NostRinger",
+    "description": "Anonymous ring signatures with Nostr keys - a demonstration of cryptographic privacy",
+    "applicationCategory": "Cryptography",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
+    },
+    "creator": {
+      "@type": "Organization",
+      "name": "NostRinger Team"
+    }
+  };
+
+  const generateAllKeys = (): UserKey[] => {
+    const newKeys: UserKey[] = [];
+    // Generate ring members
+    for (let i = 1; i <= NUM_RING; i++) {
+      const sk = generateSecretKey();
+      const priv = bytesToHex(sk);
+      const pub = getPublicKey(sk);
+      newKeys.push({
+        label: `Ring User ${i}`,
+        priv,
+        pub,
+        inRing: true
+      });
+    }
+    // Generate normal users
+    for (let j = 1; j <= NUM_NORMAL; j++) {
+      const sk = generateSecretKey();
+      const priv = bytesToHex(sk);
+      const pub = getPublicKey(sk);
+      newKeys.push({
+        label: `Normal User ${j}`,
+        priv,
+        pub,
+        inRing: false
+      });
+    }
+    return newKeys;
+  };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const stored = localStorage.getItem('nostrKeys');
+    if (stored) {
+      try {
+        const parsed: UserKey[] = JSON.parse(stored);
+        setUserKeys(parsed);
+      } catch {
+        const initialKeys = generateAllKeys();
+        setUserKeys(initialKeys);
+        localStorage.setItem('nostrKeys', JSON.stringify(initialKeys));
+      }
+    } else {
+      const initialKeys = generateAllKeys();
+      setUserKeys(initialKeys);
+      localStorage.setItem('nostrKeys', JSON.stringify(initialKeys));
+    }
+  }, []);
+
+  const handleSelectUser = (index: number) => {
+    setSelectedIndex(index);
+  };
+
+  const handleKeyChange = (index: number, newPriv: string) => {
+    try {
+      const sk = hexToBytes(newPriv);
+      const newPub = getPublicKey(sk);
+      setUserKeys(prevKeys => {
+        const updated = [...prevKeys];
+        updated[index] = { ...updated[index], priv: newPriv, pub: newPub };
+        localStorage.setItem('nostrKeys', JSON.stringify(updated));
+        return updated;
+      });
+    } catch (error) {
+      console.error("Invalid private key:", error);
+    }
+  };
+
+  const handleRegenerateAll = () => {
+    const ok = confirm("Generate new keys? This will replace all existing keys.");
+    if (!ok) return;
+    const newKeys = generateAllKeys();
+    setUserKeys(newKeys);
+    localStorage.setItem('nostrKeys', JSON.stringify(newKeys));
+    setSelectedIndex(0);
+    setSignature(null);
+    setVerifyResult(null);
+  };
+
+  const handleSign = async () => {
+    if (!message || selectedIndex == null) return;
+    const signer = userKeys[selectedIndex];
+    try {
+      const ringPubKeys = userKeys.filter(u => u.inRing).map(u => u.pub);
+      const sig = await nostringer.sign(message, signer.priv, ringPubKeys);
+      
+      // Convert the signature to a JSON string for storage
+      const sigString = typeof sig === 'string' ? sig : JSON.stringify(sig);
+      setSignature(sigString);
+      setVerifyResult(null);
+    } catch (err) {
+      console.error("Signing error:", err);
+      setSignature(null);
+      setVerifyResult(null);
+    }
+  };
+
+  const handleVerify = async () => {
+    if (!signature || !message) return;
+    const ringPubKeys = userKeys.filter(u => u.inRing).map(u => u.pub);
+    try {
+      // Parse the signature back from string if needed
+      const sigObj = signature.startsWith('{') ? JSON.parse(signature) : signature;
+      const result = await nostringer.verify(message, sigObj, ringPubKeys);
+      setVerifyResult(result);
+    } catch (err) {
+      console.error("Verification error:", err);
+      setVerifyResult(false);
+    }
+  };
+
+  return (
+    <>
+      <Script 
+        id="json-ld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="min-h-screen bg-terminalBg text-neonGreen font-mono py-6 md:py-10">
+        <div className="max-w-6xl mx-auto px-4">
+          {/* Terminal window header */}
+          <div className="bg-gray-900 rounded-t-lg p-3 flex items-center border-b border-gray-700">
+            <div className="flex space-x-2 mr-4">
+              <div className="w-3 h-3 rounded-full bg-neonRed"></div>
+              <div className="w-3 h-3 rounded-full bg-neonYellow"></div>
+              <div className="w-3 h-3 rounded-full bg-neonGreen"></div>
+            </div>
+            <div className="text-center flex-1">
+              <h1 className="text-2xl text-neonGreen font-bold tracking-wide glow-text">NostRinger</h1>
+            </div>
+          </div>
+          
+          {/* Terminal window body */}
+          <div className="bg-terminalPanel shadow-neon rounded-b-lg p-6 border-l border-r border-b border-gray-800">
+            <p className="text-center mb-8 text-gray-400 border-b border-gray-700 pb-4">
+              Ring signatures with Nostr keys – <span className="text-neonBlue glow-text-blue">anonymous cryptographic proof</span>
+            </p>
+            
+            <div className="md:flex md:space-x-6">
+              <div className="md:w-1/3 mb-6 md:mb-0">
+                <UserList 
+                  users={userKeys} 
+                  selectedIndex={selectedIndex}
+                  onSelect={handleSelectUser}
+                  onKeyChange={handleKeyChange}
+                  onRegenerate={handleRegenerateAll}
+                />
+              </div>
+              <div className="md:w-2/3 md:border-l border-gray-700 md:pl-6">
+                <SignVerifyPanel 
+                  message={message}
+                  onMessageChange={setMessage}
+                  selectedUser={userKeys[selectedIndex]}
+                  onSign={handleSign}
+                  onVerify={handleVerify}
+                  signature={signature}
+                  verifyResult={verifyResult}
+                />
+              </div>
+            </div>
+            
+            <div className="mt-8 pt-4 border-t border-gray-700 text-xs text-gray-500 text-center terminal-cursor">
+              Terminal: NostRinger v1.0 – Prove membership without revealing identity
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+    </>
   );
 }

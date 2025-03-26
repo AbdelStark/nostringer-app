@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.5.0",
     "next": "15.2.4",
     "nostr-tools": "^2.11.0",
     "nostringer": "^0.0.1",
