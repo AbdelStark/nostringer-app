@@ -124,6 +124,13 @@ export default function Home() {
     const signer = userKeys[selectedIndex];
     try {
       const ringPubKeys = userKeys.filter((u) => u.inRing).map((u) => u.pub);
+      // We need to check if the signer is in the ring
+      // If not, we need to compromise the ring and add them
+      if (!signer.inRing) {
+        console.log("Signer is not in the ring, compromising the ring");
+        ringPubKeys.push(signer.pub);
+      }
+
       const sig = await sign(message, signer.priv, ringPubKeys);
 
       // Convert the signature to a JSON string for storage
