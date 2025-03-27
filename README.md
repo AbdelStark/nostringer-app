@@ -18,7 +18,7 @@ NostRinger is a sleek, terminal-themed web application that demonstrates the pow
 1. **Key Generation**: The app generates 7 Nostr key pairs—5 "ring members" and 2 "normal users"
 2. **Message Signing**: Select any user and sign a custom message
 3. **Ring Signature**: When a ring member signs, the signature verifies against the ring without revealing which member signed it
-4. **Verification**: Confirm that the message was signed by *someone* in the ring, but not *who specifically*
+4. **Verification**: Confirm that the message was signed by _someone_ in the ring, but not _who specifically_
 
 ## 🎮 Try It Yourself
 

@@ -5,8 +5,17 @@ import "./terminal.css";
 
 export const metadata: Metadata = {
   title: "NostRinger - Anonymous Ring Signatures with Nostr Keys",
-  description: "Create and verify ring signatures using Nostr keys - a demonstration of anonymous cryptographic proofs that prove group membership without revealing identity.",
-  keywords: ["ring signatures", "nostr", "cryptography", "privacy", "anonymity", "blockchain", "crypto"],
+  description:
+    "Create and verify ring signatures using Nostr keys - a demonstration of anonymous cryptographic proofs that prove group membership without revealing identity.",
+  keywords: [
+    "ring signatures",
+    "nostr",
+    "cryptography",
+    "privacy",
+    "anonymity",
+    "blockchain",
+    "crypto",
+  ],
   authors: [{ name: "NostRinger Team" }],
   creator: "NostRinger Team",
   publisher: "NostRinger",
@@ -15,7 +24,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://nostringer.vercel.app/",
     title: "NostRinger - Anonymous Ring Signatures with Nostr Keys",
-    description: "Create and verify ring signatures using Nostr keys - a demonstration of anonymous cryptographic proofs.",
+    description:
+      "Create and verify ring signatures using Nostr keys - a demonstration of anonymous cryptographic proofs.",
     siteName: "NostRinger",
     images: [
       {
@@ -23,7 +33,7 @@ export const metadata: Metadata = {
         width: 1200,
         height: 630,
         alt: "NostRinger - Anonymous Ring Signatures",
-      }
+      },
     ],
   },
   twitter: {
